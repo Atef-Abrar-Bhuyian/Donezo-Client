@@ -1,29 +1,62 @@
 import { FaClipboardList, FaHistory, FaListUl } from "react-icons/fa";
 import { IoMdTimer } from "react-icons/io";
 import { MdDoneAll } from "react-icons/md";
-import { NavLink, Outlet, useLocation } from "react-router-dom";
+import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import Footer from "../../../Components/Footer";
+import useAuth from "../../../hooks/useAuth";
+import { CiLogout } from "react-icons/ci";
+import Swal from "sweetalert2";
 
 const Dashboard = () => {
   const location = useLocation();
+  const { user, logOut } = useAuth();
+  const navigate = useNavigate();
+
+  const handleLogOut = () => {
+    logOut()
+      .then(() => {
+        Swal.fire({
+          title: "Logout Successful",
+          background: "#6b21a8",
+          color: "#fff",
+          confirmButtonColor: "#3b0764",
+          showClass: {
+            popup: `
+                    animate__animated
+                    animate__fadeInUp
+                    animate__faster
+                  `,
+          },
+          hideClass: {
+            popup: `
+                    animate__animated
+                    animate__fadeOutDown
+                    animate__faster
+                  `,
+          },
+        });
+        navigate("/")
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
 
   return (
     <div className="flex flex-col md:flex-row">
       {/* Dashboard Side bar */}
-      <div className="md:w-64 md:min-h-screen bg-purple-300 dark:bg-purple-900 p-5">
+      <div className="md:w-64 md:min-h-screen bg-purple-300 dark:bg-purple-900 p-5 border-4 flex flex-col justify-between">
         <div className="flex flex-col items-center md:items-start justify-center">
           <img
             className="w-24 rounded-full"
-            src="https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg?semt=ais_hybrid"
+            src={user?.photoURL}
             alt="User Image"
           />
+          <p className="mt-4 text-purple-900 dark:text-white">{user?.email}</p>
           <p className="mt-4 text-purple-900 dark:text-white">
-            abrarbhuyian8@gmail.com
+            {user?.displayName}
           </p>
-          <p className="mt-4 text-purple-900 dark:text-white">
-            Md. Atef Abrar Bhuyian
-          </p>
-          <div className="divider dark:border-gray-700"></div>
+          <div className="divider dark:border-white-700"></div>
           <ul className="menu p-0 gap-3 flex-row md:flex-col">
             <li className="hover:bg-neutral rounded-lg text-purple-900 hover:text-white dark:text-white dark:hover:text-black">
               <NavLink
@@ -129,6 +162,12 @@ const Dashboard = () => {
             </li>
           </ul>
         </div>
+        <div className=" w-full">
+          <button onClick={handleLogOut} className="btn flex items-center justify-center w-full transition-all hover:bg-purple-950 hover:text-white shadow-none duration-300 border-none">
+            <CiLogout />
+            Logout
+          </button>
+        </div>
       </div>
 
       {/* Dashboard Content */}
@@ -137,7 +176,7 @@ const Dashboard = () => {
           <Outlet></Outlet>
         </div>
         <div>
-            <Footer></Footer>
+          <Footer></Footer>
         </div>
       </div>
     </div>

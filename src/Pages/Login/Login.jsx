@@ -43,9 +43,7 @@ const Login = () => {
         navigate("/dashboard");
       })
       .catch((err) => {
-        if (err.code === "auth/invalid-credential") {
-          toast.error("Invalid email or password!");
-        }
+        toast.error(err.message || "Login failed! Please try again.");
       });
   };
 
