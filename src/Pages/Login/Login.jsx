@@ -1,9 +1,81 @@
 import { Fade } from "react-awesome-reveal";
 import donezoLogo from "../../assets/denzoLogo/denzo-bg-remove.png";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
+import useAuth from "../../hooks/useAuth";
+import Swal from "sweetalert2";
+import { toast } from "react-toastify";
 
 const Login = () => {
+  const { signIn, googleSignIn } = useAuth();
+  const navigate = useNavigate();
+
+  // Email,Pass login
+  const handleLogin = (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const email = form.email.value;
+    const password = form.password.value;
+
+    signIn(email, password)
+      .then((result) => {
+        console.log(result);
+        Swal.fire({
+          title: "Login Successful",
+          background: "#6b21a8",
+          color: "#fff",
+          confirmButtonColor: "#3b0764",
+          showClass: {
+            popup: `
+            animate__animated
+            animate__fadeInUp
+            animate__faster
+          `,
+          },
+          hideClass: {
+            popup: `
+            animate__animated
+            animate__fadeOutDown
+            animate__faster
+          `,
+          },
+        });
+        navigate("/dashboard");
+      })
+      .catch((err) => {
+        if (err.code === "auth/invalid-credential") {
+          toast.error("Invalid email or password!");
+        }
+      });
+  };
+
+  const handleGoogleSignIn = () => {
+    googleSignIn().then((result) => {
+      Swal.fire({
+        title: "Login Successful",
+        background: "#6b21a8",
+        color: "#fff",
+        confirmButtonColor: "#3b0764",
+        showClass: {
+          popup: `
+            animate__animated
+            animate__fadeInUp
+            animate__faster
+          `,
+        },
+        hideClass: {
+          popup: `
+            animate__animated
+            animate__fadeOutDown
+            animate__faster
+          `,
+        },
+      });
+      console.log("Result", result);
+      navigate("/dashboard");
+    });
+  };
+
   return (
     <div className="min-h-screen flex md:flex-row flex-col-reverse bg-gray-100 transition-all duration-300">
       {/* Left Section - Login Form */}
@@ -17,7 +89,8 @@ const Login = () => {
               Login to continue managing your tasks.
             </p>
 
-            <div className="mt-6 space-y-4">
+            {/* Login Form */}
+            <form onSubmit={handleLogin} className="mt-6 space-y-4">
               {/* Email Input */}
               <div>
                 <label className="block text-black text-sm font-medium mb-1">
@@ -25,6 +98,7 @@ const Login = () => {
                 </label>
                 <input
                   type="email"
+                  name="email"
                   placeholder="Enter your email"
                   className="w-full p-3 border border-gray-500 rounded-lg focus:ring-2 focus:ring-purple-400 focus:outline-none bg-gray-200 text-gray-900"
                 />
@@ -37,6 +111,7 @@ const Login = () => {
                 </label>
                 <input
                   type="password"
+                  name="password"
                   placeholder="Enter your password"
                   className="w-full p-3 border border-gray-500 rounded-lg focus:ring-2 focus:ring-purple-400 focus:outline-none bg-gray-200 text-gray-900"
                 />
@@ -49,7 +124,7 @@ const Login = () => {
               >
                 Login
               </button>
-            </div>
+            </form>
 
             {/* Divider */}
             <div className="flex items-center justify-center my-4">
@@ -59,8 +134,11 @@ const Login = () => {
             </div>
 
             {/* Google Login Button */}
-            <button className="w-full flex items-center justify-center gap-2 text-white py-3 rounded-lg font-semibold bg-purple-800 hover:bg-purple-950 transition-all duration-200 cursor-pointer">
-            <FcGoogle className="text-xl"/>
+            <button
+              onClick={handleGoogleSignIn}
+              className="w-full flex items-center justify-center gap-2 text-white py-3 rounded-lg font-semibold bg-purple-800 hover:bg-purple-950 transition-all duration-200 cursor-pointer"
+            >
+              <FcGoogle className="text-xl" />
               Login with Google
             </button>
 
