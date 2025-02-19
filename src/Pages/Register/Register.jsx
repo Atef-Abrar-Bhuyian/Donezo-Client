@@ -3,18 +3,27 @@ import donezoLogo from "../../assets/denzoLogo/denzo-bg-remove.png";
 import { Link } from "react-router-dom";
 import { FcGoogle } from "react-icons/fc";
 
-const Login = () => {
+const Register = () => {
   return (
-    <div className="min-h-screen flex md:flex-row flex-col-reverse bg-gray-100 transition-all duration-300">
+    <div className="min-h-screen flex flex-col md:flex-row bg-gray-100 transition-all duration-300">
+        {/* Right Section - Branding */}
+      <div className="bg-purple-200 flex-1 flex flex-col items-center justify-center p-10">
+        <img
+          src={donezoLogo}
+          alt="Donezo Logo"
+          className="border border-purple-600 rounded-full shadow-2xl shadow-black cursor-pointer animate__animated animate__jackInTheBox"
+        />
+      </div>
+
       {/* Left Section - Login Form */}
       <div className="flex flex-col items-center justify-center flex-1 px-6 md:px-12 mt-10">
-        <Fade direction="right">
+        <Fade direction="left">
           <div className="bg-purple-200 shadow-2xl shadow-purple-900 p-8 rounded-xl w-full max-w-md ">
             <h1 className="text-3xl font-bold text-purple-950 text-center ">
-              Welcome Back!
+              Register Now!
             </h1>
             <p className="text-purple-600 text-center mt-2">
-              Login to continue managing your tasks.
+              Sign up now for manage your task smoothly.
             </p>
 
             <div className="mt-6 space-y-4">
@@ -60,33 +69,26 @@ const Login = () => {
 
             {/* Google Login Button */}
             <button className="w-full flex items-center justify-center gap-2 text-white py-3 rounded-lg font-semibold bg-purple-800 hover:bg-purple-950 transition-all duration-200 cursor-pointer">
-            <FcGoogle className="text-xl"/>
+              <FcGoogle className="text-xl" />
               Login with Google
             </button>
 
             <p className="mt-4 text-black">
-              Don&apos;t have an account?{" "}
+              Already have an account?
               <Link
-                to={"/register"}
+                to={"/"}
                 className="font-bold text-purple-800 hover:text-purple-950 underline"
               >
-                Register Now
+                Login Now
               </Link>
             </p>
           </div>
         </Fade>
       </div>
 
-      {/* Right Section - Branding */}
-      <div className="bg-purple-200 flex-1 flex flex-col items-center justify-center p-10">
-        <img
-          src={donezoLogo}
-          alt="Donezo Logo"
-          className="border border-purple-600 rounded-full shadow-2xl shadow-black cursor-pointer animate__animated animate__jackInTheBox"
-        />
-      </div>
+      
     </div>
   );
 };
 
-export default Login;
+export default Register;
