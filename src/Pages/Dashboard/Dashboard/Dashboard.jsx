@@ -2,12 +2,13 @@ import { FaClipboardList, FaHistory, FaListUl } from "react-icons/fa";
 import { IoMdTimer } from "react-icons/io";
 import { MdDoneAll } from "react-icons/md";
 import { NavLink, Outlet, useLocation } from "react-router-dom";
+import Footer from "../../../Components/Footer";
 
 const Dashboard = () => {
   const location = useLocation();
 
   return (
-    <div className="flex flex-col md:flex-row gap-20">
+    <div className="flex flex-col md:flex-row">
       {/* Dashboard Side bar */}
       <div className="md:w-64 md:min-h-screen bg-purple-300 dark:bg-purple-900 p-5">
         <div className="flex flex-col items-center md:items-start justify-center">
@@ -16,13 +17,22 @@ const Dashboard = () => {
             src="https://img.freepik.com/free-vector/blue-circle-with-white-user_78370-4707.jpg?semt=ais_hybrid"
             alt="User Image"
           />
-          <p className="mt-4 text-purple-900 dark:text-white">abrarbhuyian8@gmail.com</p>
-          <p className="mt-4 text-purple-900 dark:text-white">Md. Atef Abrar Bhuyian</p>
+          <p className="mt-4 text-purple-900 dark:text-white">
+            abrarbhuyian8@gmail.com
+          </p>
+          <p className="mt-4 text-purple-900 dark:text-white">
+            Md. Atef Abrar Bhuyian
+          </p>
           <div className="divider dark:border-gray-700"></div>
           <ul className="menu p-0 gap-3 flex-row md:flex-col">
             <li className="hover:bg-neutral rounded-lg text-purple-900 hover:text-white dark:text-white dark:hover:text-black">
               <NavLink
-                className={`font-bold ${location.pathname === "/dashboard" || location.pathname === "/dashboard/" ? "bg-black text-white" : ""}`}
+                className={`font-bold ${
+                  location.pathname === "/dashboard" ||
+                  location.pathname === "/dashboard/"
+                    ? "bg-black text-white"
+                    : ""
+                }`}
                 to={"/dashboard/"}
               >
                 <FaClipboardList />
@@ -31,7 +41,11 @@ const Dashboard = () => {
             </li>
             <li className="hover:bg-neutral rounded-lg text-purple-900 hover:text-white dark:text-white dark:hover:text-black">
               <NavLink
-                className={`font-bold ${location.pathname === "/" || location.pathname === "/" ? "bg-black text-white" : ""}`}
+                className={`font-bold ${
+                  location.pathname === "/" || location.pathname === "/"
+                    ? "bg-black text-white"
+                    : ""
+                }`}
                 to={"/"}
               >
                 <FaListUl />
@@ -40,7 +54,11 @@ const Dashboard = () => {
             </li>
             <li className="hover:bg-neutral rounded-lg text-purple-900 hover:text-white dark:text-white dark:hover:text-black">
               <NavLink
-                className={`font-bold ${location.pathname === "/" || location.pathname === "/" ? "bg-black text-white" : ""}`}
+                className={`font-bold ${
+                  location.pathname === "/" || location.pathname === "/"
+                    ? "bg-black text-white"
+                    : ""
+                }`}
                 to={"/"}
               >
                 <IoMdTimer />
@@ -49,7 +67,11 @@ const Dashboard = () => {
             </li>
             <li className="hover:bg-neutral rounded-lg text-purple-900 hover:text-white dark:text-white dark:hover:text-black">
               <NavLink
-                className={`font-bold ${location.pathname === "/" || location.pathname === "/" ? "bg-black text-white" : ""}`}
+                className={`font-bold ${
+                  location.pathname === "/" || location.pathname === "/"
+                    ? "bg-black text-white"
+                    : ""
+                }`}
                 to={"/"}
               >
                 <MdDoneAll />
@@ -58,7 +80,11 @@ const Dashboard = () => {
             </li>
             <li className="hover:bg-neutral rounded-lg text-purple-900 hover:text-white dark:text-white dark:hover:text-black">
               <NavLink
-                className={`font-bold ${location.pathname === "/" || location.pathname === "/" ? "bg-black text-white" : ""}`}
+                className={`font-bold ${
+                  location.pathname === "/" || location.pathname === "/"
+                    ? "bg-black text-white"
+                    : ""
+                }`}
                 to={"/"}
               >
                 <FaHistory />
@@ -106,8 +132,13 @@ const Dashboard = () => {
       </div>
 
       {/* Dashboard Content */}
-      <div className="flex-1 p-10">
-        <Outlet></Outlet>
+      <div className="flex-1 flex flex-col p-6">
+        <div className="flex-1">
+          <Outlet></Outlet>
+        </div>
+        <div>
+            <Footer></Footer>
+        </div>
       </div>
     </div>
   );
