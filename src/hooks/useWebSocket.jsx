@@ -8,6 +8,21 @@ const useWebSocket = (userEmail) => {
   useEffect(() => {
     if (!userEmail) return;
 
+    // Fetch tasks from API
+    const fetchTasks = async () => {
+      try {
+        const response = await fetch(
+          `http://localhost:5000/tasks?userEmail=${userEmail}`
+        );
+        const data = await response.json();
+        setTasks(data);
+      } catch (error) {
+        console.error("Error fetching tasks:", error);
+      }
+    };
+
+    fetchTasks(); // Load tasks on first render
+
     const socket = new WebSocket(`ws://localhost:5000`);
 
     socket.onopen = () => {
@@ -17,29 +32,30 @@ const useWebSocket = (userEmail) => {
 
     socket.onmessage = (event) => {
       const data = JSON.parse(event.data);
+      console.log("WebSocket Message Received:", data); // Debugging
 
       if (data.type === "TASKS_UPDATED") {
+        fetchTasks(); // Ensure fresh data is fetched
+      }
+
+      if (data.type === "TASK_ADDED") {
+        toast.success("New task added!");
+        setTasks((prevTasks) => [...prevTasks, data?.task]);
+      }
+
+      if (data.type === "TASK_DELETED") {
+        if (!data.taskId) {
+          toast.error("Failed! Please Try Again Later!");
+          return;
+        }
         setTasks((prevTasks) =>
-          prevTasks.map((task) =>
-            task._id === data.task._id ? data.task : task
-          )
+          prevTasks.filter((task) => task._id !== data.taskId)
         );
-        toast.success("Task updated successfully!");
+        toast.success("Task deleted successfully!");
       }
     };
 
-    socket.onerror = (error) => {
-      console.error("WebSocket Error:", error);
-      toast.error("WebSocket encountered an error.");
-    };
-
-    socket.onclose = () => {
-      console.log("WebSocket Disconnected");
-      setTimeout(() => {
-        setWs(new WebSocket(`ws://localhost:5000`)); 
-      }, 3000);
-    };
-
+    socket.onclose = () => console.log("WebSocket Disconnected");
     setWs(socket);
 
     return () => {

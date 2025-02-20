@@ -6,12 +6,19 @@ import { toast, ToastContainer } from "react-toastify";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import useWebSocket from "../../../hooks/useWebSocket";
+import TaskCard from "../../../Components/TaskCard/TaskCard";
 
 const NewTask = () => {
   const { user } = useAuth();
   const [modal, setModal] = useState(null);
   const [startDate, setStartDate] = useState(null);
-  const { ws } = useWebSocket(user?.email);
+  const { ws, tasks,setTasks } = useWebSocket(user?.email);
+
+  const toDoTaskList = tasks?.filter((task) => task?.category === "ToDo");
+  const inProgressTaskList = tasks?.filter(
+    (task) => task?.category === "InProgress"
+  );
+  const doneTaskList = tasks?.filter((task) => task?.category === "Done");
 
   const handleOpenModal = () => {
     if (modal) modal.showModal();
@@ -26,35 +33,27 @@ const NewTask = () => {
     const userEmail = user?.email;
     const createdAt = new Date().toISOString();
     const taskDueDate = startDate?.toISOString() || null;
-
-    if (title.length > 50) {
-      toast.error("Title must be 50 characters or less.");
+  
+    if (title.length > 50 || description.length > 200) {
+      toast.error("Title or Description is too long.");
       return;
     }
-
-    if (description.length > 200) {
-      toast.error("Description must be 200 characters or less.");
-      return;
-    }
-
-    const newTask = {
-      title,
-      description,
-      category,
-      userEmail,
-      createdAt,
-      taskDueDate,
-    };
-
+  
+    const newTask = { title, description, category, userEmail, createdAt, taskDueDate };
+  
     if (ws && ws.readyState === WebSocket.OPEN) {
-      ws.send(JSON.stringify({ type: "TASK_UPDATE", userId: userEmail, task: newTask }));
+      ws.send(
+        JSON.stringify({ type: "TASK_UPDATE", userId: userEmail, task: newTask })
+      );
+      setTasks((prevTasks) => [...prevTasks, newTask]); 
     } else {
       toast.error("WebSocket is not connected!");
     }
-
-    if (modal) modal.close();
+  
     form.reset();
+    if (modal) modal.close();
   };
+  
 
   return (
     <div>
@@ -70,15 +69,64 @@ const NewTask = () => {
         <Fade>
           <h1 className="text-2xl text-center font-bold">All Task</h1>
         </Fade>
-        <div className="my-6 grid md:grid-cols-2 lg:grid-cols-3 gap-6 items-center justify-center">
-          <div className="border-2 rounded-lg">
+        <div className="my-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 justify-center">
+          <div className="border-2 rounded-lg p-2 w-full">
             <h1 className="text-center font-semibold">To Do</h1>
+            <div className="flex flex-col">
+              {toDoTaskList?.length > 0 ? (
+                toDoTaskList.map((task, idx) => (
+                  <TaskCard
+                  _id={task?._id}
+                    key={idx}
+                    title={task?.title}
+                    description={task?.description}
+                    category={task?.category}
+                    taskDueDate={task?.taskDueDate}
+                  />
+                ))
+              ) : (
+                <p className="text-center">No tasks here</p>
+              )}
+              
+            </div>
           </div>
-          <div className="border-2 rounded-lg">
+          <div className="border-2 rounded-lg p-2">
             <h1 className="text-center font-semibold">In Progress</h1>
+            <div>
+              {inProgressTaskList?.length > 0 ? (
+                inProgressTaskList.map((task, idx) => (
+                  <TaskCard
+                  _id={task?._id}
+                    key={idx}
+                    title={task?.title}
+                    description={task?.description}
+                    category={task?.category}
+                    taskDueDate={task?.taskDueDate}
+                  />
+                ))
+              ) : (
+                <p className="text-center">No tasks here</p>
+              )}
+            </div>
           </div>
-          <div className="border-2 rounded-lg">
+          <div className="border-2 rounded-lg p-2">
             <h1 className="text-center font-semibold">Done</h1>
+            <div>
+              {doneTaskList?.length > 0 ? (
+                doneTaskList.map((task, idx) => (
+                  <TaskCard
+                  _id={task?._id}
+                    key={idx}
+                    title={task?.title}
+                    description={task?.description}
+                    category={task?.category}
+                    taskDueDate={task?.taskDueDate}
+                  />
+                ))
+              ) : (
+                <p className="text-center">No tasks here</p>
+              )}
+            </div>
           </div>
         </div>
       </div>

@@ -45,7 +45,7 @@ const Dashboard = () => {
   return (
     <div className="flex flex-col md:flex-row">
       {/* Dashboard Side bar */}
-      <div className="md:w-64 md:min-h-screen bg-purple-300 dark:bg-purple-900 p-5 flex flex-col justify-between">
+      <div className="md:w-64 md:min-h-screen bg-purple-300 dark:bg-purple-900 p-5 flex flex-col justify-between lg:fixed lg:h-full">
         <div className="flex flex-col items-center md:items-start justify-center">
           <img
             className="w-24 rounded-full"
@@ -172,7 +172,7 @@ const Dashboard = () => {
       </div>
 
       {/* Dashboard Content */}
-      <div className="flex-1 flex flex-col p-6">
+      <div className="flex-1 lg:ml-64 flex flex-col p-6 overflow-y-auto">
         <div className="flex-1">
           <Outlet></Outlet>
         </div>
