@@ -75,7 +75,7 @@ const Dashboard = () => {
             <li className="hover:bg-black rounded-lg text-purple-900 hover:text-white dark:text-white  ">
               <NavLink
                 className={`font-bold ${
-                  location.pathname === "/" || location.pathname === "/"
+                  location.pathname === "/dashboard/toDo" || location.pathname === "/dashboard/toDo/"
                     ? "bg-black text-white"
                     : ""
                 }`}
@@ -88,7 +88,7 @@ const Dashboard = () => {
             <li className="hover:bg-black rounded-lg text-purple-900 hover:text-white dark:text-white  ">
               <NavLink
                 className={`font-bold ${
-                  location.pathname === "/" || location.pathname === "/"
+                  location.pathname === "/dashboard/InProgress" || location.pathname === "/dashboard/InProgress/"
                     ? "bg-black text-white"
                     : ""
                 }`}
