@@ -5,50 +5,67 @@ import GoogleLogIn from "../../Components/GoogleLogIn/GoogleLogIn";
 import useAuth from "../../hooks/useAuth";
 import Swal from "sweetalert2";
 import { toast } from "react-toastify";
+import useAxiosPublic from "../../hooks/useAxiosPublic";
 
 const Register = () => {
   const { createUser, updateUserProfile } = useAuth();
   const navigate = useNavigate();
+  const axiosPublic = useAxiosPublic();
 
   const handleRegister = (e) => {
     e.preventDefault();
     const form = e.target;
-    const name = form.name.value;
+    const displayName = form.name.value;
     const photoURL = form.photoURL.value;
     const email = form.email.value;
     const password = form.password.value;
 
-    createUser(email, password).then((result) => {
-      updateUserProfile(name, photoURL)
-        .then(() => {
-          console.log(result);
-          Swal.fire({
-            title: "Login Successful",
-            background: "#6b21a8",
-            color: "#fff",
-            confirmButtonColor: "#3b0764",
-            showClass: {
-              popup: `
-                          animate__animated
-                          animate__fadeInUp
-                          animate__faster
-                        `,
-            },
-            hideClass: {
-              popup: `
-                          animate__animated
-                          animate__fadeOutDown
-                          animate__faster
-                        `,
-            },
+    createUser(email, password)
+      .then((result) => {
+        updateUserProfile(displayName, photoURL)
+          .then(() => {
+            // Create user entry in the database
+            const userInfo = { displayName, photoURL, email };
+            axiosPublic
+              .post("/users", userInfo)
+              // toast and navigate to dashboard
+              .then((res) => {
+                if (res.data.insertedId) {
+                  Swal.fire({
+                    title: "Profile Created Successfully",
+                    background: "#6b21a8",
+                    color: "#fff",
+                    confirmButtonColor: "#3b0764",
+                    showClass: {
+                      popup:
+                        "animate__animated animate__fadeInUp animate__faster",
+                    },
+                    hideClass: {
+                      popup:
+                        "animate__animated animate__fadeOutDown animate__faster",
+                    },
+                  }).then(() => {
+                    navigate("/dashboard");
+                  });
+                } else {
+                  toast.error("User creation failed. Please try again later.");
+                }
+              })
+              .catch((err) => {
+                toast.error(
+                  err.message || "Database Error! Please try again later"
+                );
+              });
+          })
+          .catch((err) => {
+            toast.error(`${err.message}`);
           });
-          navigate("/dashboard");
-        })
-        .catch((err) => {
-          console.log(err);
-          toast.error(err.message || "Something went wrong! Please try again.");
-        });
-    });
+      })
+      .catch((err) => {
+        toast.error(
+          err.message || "Registration failed. Please try again later."
+        );
+      });
   };
 
   return (
