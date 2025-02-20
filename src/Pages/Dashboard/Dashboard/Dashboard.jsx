@@ -45,7 +45,7 @@ const Dashboard = () => {
   return (
     <div className="flex flex-col md:flex-row">
       {/* Dashboard Side bar */}
-      <div className="md:w-64 md:min-h-screen bg-purple-300 dark:bg-purple-900 p-5 border-4 flex flex-col justify-between">
+      <div className="md:w-64 md:min-h-screen bg-purple-300 dark:bg-purple-900 p-5 flex flex-col justify-between">
         <div className="flex flex-col items-center md:items-start justify-center">
           <img
             className="w-24 rounded-full"
@@ -58,7 +58,7 @@ const Dashboard = () => {
           </p>
           <div className="divider dark:border-white-700"></div>
           <ul className="menu p-0 gap-3 flex-row md:flex-col">
-            <li className="hover:bg-neutral rounded-lg text-purple-900 hover:text-white dark:text-white dark:hover:text-black">
+            <li className="hover:bg-black rounded-lg text-purple-900 hover:text-white dark:text-white  ">
               <NavLink
                 className={`font-bold ${
                   location.pathname === "/dashboard" ||
@@ -72,7 +72,7 @@ const Dashboard = () => {
                 New Task
               </NavLink>
             </li>
-            <li className="hover:bg-neutral rounded-lg text-purple-900 hover:text-white dark:text-white dark:hover:text-black">
+            <li className="hover:bg-black rounded-lg text-purple-900 hover:text-white dark:text-white  ">
               <NavLink
                 className={`font-bold ${
                   location.pathname === "/" || location.pathname === "/"
@@ -85,7 +85,7 @@ const Dashboard = () => {
                 To Do
               </NavLink>
             </li>
-            <li className="hover:bg-neutral rounded-lg text-purple-900 hover:text-white dark:text-white dark:hover:text-black">
+            <li className="hover:bg-black rounded-lg text-purple-900 hover:text-white dark:text-white  ">
               <NavLink
                 className={`font-bold ${
                   location.pathname === "/" || location.pathname === "/"
@@ -98,7 +98,7 @@ const Dashboard = () => {
                 In Progress
               </NavLink>
             </li>
-            <li className="hover:bg-neutral rounded-lg text-purple-900 hover:text-white dark:text-white dark:hover:text-black">
+            <li className="hover:bg-black rounded-lg text-purple-900 hover:text-white dark:text-white  ">
               <NavLink
                 className={`font-bold ${
                   location.pathname === "/" || location.pathname === "/"
@@ -111,7 +111,7 @@ const Dashboard = () => {
                 Done
               </NavLink>
             </li>
-            <li className="hover:bg-neutral rounded-lg text-purple-900 hover:text-white dark:text-white dark:hover:text-black">
+            <li className="hover:bg-black rounded-lg text-purple-900 hover:text-white dark:text-white  ">
               <NavLink
                 className={`font-bold ${
                   location.pathname === "/" || location.pathname === "/"
@@ -162,7 +162,7 @@ const Dashboard = () => {
             </li>
           </ul>
         </div>
-        <div className=" w-full">
+        <div className="w-full">
           <button onClick={handleLogOut} className="btn flex items-center justify-center w-full transition-all hover:bg-purple-950 hover:text-white shadow-none duration-300 border-none">
             <CiLogout />
             Logout

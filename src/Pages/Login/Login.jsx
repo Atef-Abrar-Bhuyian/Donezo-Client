@@ -1,13 +1,13 @@
 import { Fade } from "react-awesome-reveal";
 import donezoLogo from "../../assets/denzoLogo/denzo-bg-remove.png";
 import { Link, useNavigate } from "react-router-dom";
-import { FcGoogle } from "react-icons/fc";
 import useAuth from "../../hooks/useAuth";
 import Swal from "sweetalert2";
 import { toast } from "react-toastify";
+import GoogleLogIn from "../../Components/GoogleLogIn/GoogleLogIn";
 
 const Login = () => {
-  const { signIn, googleSignIn } = useAuth();
+  const { signIn } = useAuth();
   const navigate = useNavigate();
 
   // Email,Pass login
@@ -47,32 +47,7 @@ const Login = () => {
       });
   };
 
-  const handleGoogleSignIn = () => {
-    googleSignIn().then((result) => {
-      Swal.fire({
-        title: "Login Successful",
-        background: "#6b21a8",
-        color: "#fff",
-        confirmButtonColor: "#3b0764",
-        showClass: {
-          popup: `
-            animate__animated
-            animate__fadeInUp
-            animate__faster
-          `,
-        },
-        hideClass: {
-          popup: `
-            animate__animated
-            animate__fadeOutDown
-            animate__faster
-          `,
-        },
-      });
-      console.log("Result", result);
-      navigate("/dashboard");
-    });
-  };
+  
 
   return (
     <div className="min-h-screen flex md:flex-row flex-col-reverse bg-gray-100 transition-all duration-300">
@@ -132,13 +107,7 @@ const Login = () => {
             </div>
 
             {/* Google Login Button */}
-            <button
-              onClick={handleGoogleSignIn}
-              className="w-full flex items-center justify-center gap-2 text-white py-3 rounded-lg font-semibold bg-purple-800 hover:bg-purple-950 transition-all duration-200 cursor-pointer"
-            >
-              <FcGoogle className="text-xl" />
-              Login with Google
-            </button>
+            <GoogleLogIn></GoogleLogIn>
 
             <p className="mt-4 text-black">
               Don&apos;t have an account?{" "}

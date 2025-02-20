@@ -1,12 +1,59 @@
 import { Fade } from "react-awesome-reveal";
 import donezoLogo from "../../assets/denzoLogo/denzo-bg-remove.png";
-import { Link } from "react-router-dom";
-import { FcGoogle } from "react-icons/fc";
+import { Link, useNavigate } from "react-router-dom";
+import GoogleLogIn from "../../Components/GoogleLogIn/GoogleLogIn";
+import useAuth from "../../hooks/useAuth";
+import Swal from "sweetalert2";
+import { toast } from "react-toastify";
 
 const Register = () => {
+  const { createUser, updateUserProfile } = useAuth();
+  const navigate = useNavigate();
+
+  const handleRegister = (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const name = form.name.value;
+    const photoURL = form.photoURL.value;
+    const email = form.email.value;
+    const password = form.password.value;
+
+    createUser(email, password).then((result) => {
+      updateUserProfile(name, photoURL)
+        .then(() => {
+          console.log(result);
+          Swal.fire({
+            title: "Login Successful",
+            background: "#6b21a8",
+            color: "#fff",
+            confirmButtonColor: "#3b0764",
+            showClass: {
+              popup: `
+                          animate__animated
+                          animate__fadeInUp
+                          animate__faster
+                        `,
+            },
+            hideClass: {
+              popup: `
+                          animate__animated
+                          animate__fadeOutDown
+                          animate__faster
+                        `,
+            },
+          });
+          navigate("/dashboard");
+        })
+        .catch((err) => {
+          console.log(err);
+          toast.error(err.message || "Something went wrong! Please try again.");
+        });
+    });
+  };
+
   return (
     <div className="min-h-screen flex flex-col md:flex-row bg-gray-100 transition-all duration-300">
-        {/* Right Section - Branding */}
+      {/* Right Section - Branding */}
       <div className="bg-purple-200 flex-1 flex flex-col items-center justify-center p-10">
         <img
           src={donezoLogo}
@@ -26,7 +73,31 @@ const Register = () => {
               Sign up now for manage your task smoothly.
             </p>
 
-            <div className="mt-6 space-y-4">
+            <form onSubmit={handleRegister} className="mt-6 space-y-4">
+              {/* Email Input */}
+              <div>
+                <label className="block text-black text-sm font-medium mb-1">
+                  Name
+                </label>
+                <input
+                  type="text"
+                  name="name"
+                  placeholder="Enter your email"
+                  className="w-full p-3 border border-gray-500 rounded-lg focus:ring-2 focus:ring-purple-400 focus:outline-none bg-gray-200 text-gray-900"
+                />
+              </div>
+              {/* Email Input */}
+              <div>
+                <label className="block text-black text-sm font-medium mb-1">
+                  PhotoURL
+                </label>
+                <input
+                  type="url"
+                  name="photoURL"
+                  placeholder="Enter your email"
+                  className="w-full p-3 border border-gray-500 rounded-lg focus:ring-2 focus:ring-purple-400 focus:outline-none bg-gray-200 text-gray-900"
+                />
+              </div>
               {/* Email Input */}
               <div>
                 <label className="block text-black text-sm font-medium mb-1">
@@ -34,6 +105,7 @@ const Register = () => {
                 </label>
                 <input
                   type="email"
+                  name="email"
                   placeholder="Enter your email"
                   className="w-full p-3 border border-gray-500 rounded-lg focus:ring-2 focus:ring-purple-400 focus:outline-none bg-gray-200 text-gray-900"
                 />
@@ -46,6 +118,7 @@ const Register = () => {
                 </label>
                 <input
                   type="password"
+                  name="password"
                   placeholder="Enter your password"
                   className="w-full p-3 border border-gray-500 rounded-lg focus:ring-2 focus:ring-purple-400 focus:outline-none bg-gray-200 text-gray-900"
                 />
@@ -58,7 +131,7 @@ const Register = () => {
               >
                 Login
               </button>
-            </div>
+            </form>
 
             {/* Divider */}
             <div className="flex items-center justify-center my-4">
@@ -68,10 +141,7 @@ const Register = () => {
             </div>
 
             {/* Google Login Button */}
-            <button className="w-full flex items-center justify-center gap-2 text-white py-3 rounded-lg font-semibold bg-purple-800 hover:bg-purple-950 transition-all duration-200 cursor-pointer">
-              <FcGoogle className="text-xl" />
-              Login with Google
-            </button>
+            <GoogleLogIn></GoogleLogIn>
 
             <p className="mt-4 text-black">
               Already have an account?
@@ -85,8 +155,6 @@ const Register = () => {
           </div>
         </Fade>
       </div>
-
-      
     </div>
   );
 };
