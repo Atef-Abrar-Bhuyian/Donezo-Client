@@ -101,7 +101,7 @@ const Dashboard = () => {
             <li className="hover:bg-black rounded-lg text-purple-900 hover:text-white dark:text-white  ">
               <NavLink
                 className={`font-bold ${
-                  location.pathname === "/" || location.pathname === "/"
+                  location.pathname === "/dashboard/Done" || location.pathname === "/dashboard/Done/"
                     ? "bg-black text-white"
                     : ""
                 }`}
