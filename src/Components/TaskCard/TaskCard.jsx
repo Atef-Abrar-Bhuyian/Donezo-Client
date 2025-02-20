@@ -4,12 +4,11 @@ import Swal from "sweetalert2";
 import useAuth from "../../hooks/useAuth";
 import useWebSocket from "../../hooks/useWebSocket";
 import { toast } from "react-toastify";
-import { useEffect } from "react";
 
 // eslint-disable-next-line react/prop-types
-const TaskCard = ({ title, category, taskDueDate, _id }) => {
+const TaskCard = ({ title, category, taskDueDate, _id, setTasks }) => {
   const { user } = useAuth();
-  const { ws, setTasks } = useWebSocket(user?.email);
+  const { ws } = useWebSocket(user?.email);
 
   const handleDelete = () => {
     Swal.fire({
@@ -17,7 +16,9 @@ const TaskCard = ({ title, category, taskDueDate, _id }) => {
       text: "You won't be able to revert this!",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: "#3085d6",
+      background: "#3b0764",
+      color: "#fff",
+      confirmButtonColor: "#6b21a8",
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
@@ -30,41 +31,18 @@ const TaskCard = ({ title, category, taskDueDate, _id }) => {
               userId: user?.email,
             })
           );
+          setTasks((prevTasks) => prevTasks.filter((task) => task._id !== _id));
         } else {
-          toast.error("WebSocket is not connected!");
+          toast.error("Error!", "WebSocket is not connected!", "error");
         }
       }
     });
   };
 
-  // ✅ Use `useEffect` to assign `onmessage` safely
-  useEffect(() => {
-    if (!ws) return; // Prevent error if ws is null
-
-    const handleWebSocketMessage = (event) => {
-      const data = JSON.parse(event.data);
-      console.log("WebSocket message received:", data);
-
-      if (data.type === "TASK_DELETED") {
-        setTasks((prevTasks) =>
-          prevTasks.filter((task) => task._id !== data.taskId)
-        );
-        toast.success("Task deleted successfully!");
-      }
-    };
-
-    ws.onmessage = handleWebSocketMessage;
-
-    // Cleanup function to avoid memory leaks
-    return () => {
-      ws.onmessage = null;
-    };
-  }, [ws, setTasks]); // Re-run if ws or setTasks changes
-
   return (
-    <div className="border rounded-lg p-4 shadow-md cursor-pointer my-4">
+    <div className="border rounded-lg p-4 shadow-md cursor-pointer my-4 draggable">
       <div className="flex justify-between items-center">
-        <h2 className="text-lg font-semibold">{title}</h2>
+        <h2 className="text-lg font-semibold ">{title}</h2>
         <div className="flex gap-2">
           <button className="text-xl cursor-pointer hover:text-purple-900">
             <LuEye />
@@ -78,11 +56,25 @@ const TaskCard = ({ title, category, taskDueDate, _id }) => {
         </div>
       </div>
       <div className="flex justify-between items-center mt-3 text-sm text-white">
-        <span className="px-3 py-1 bg-purple-200 text-black rounded-full">
+        <span
+          className={`px-3 py-1 rounded-full text-black ${
+            category === "ToDo"
+              ? "bg-purple-200"
+              : category === "InProgress"
+              ? "bg-purple-400"
+              : category === "Done"
+              ? "bg-green-200"
+              : "bg-gray-200"
+          }`}
+        >
           {category}
         </span>
         {taskDueDate && (
-          <span className="text-xs text-black bg-white">
+          <span
+            className={`text-xs text-black px-2 py-1 rounded ${
+              new Date(taskDueDate) < new Date() ? "bg-red-200" : "bg-green-200"
+            }`}
+          >
             Due: {new Date(taskDueDate).toLocaleDateString()}
           </span>
         )}

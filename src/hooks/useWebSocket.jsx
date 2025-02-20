@@ -21,7 +21,7 @@ const useWebSocket = (userEmail) => {
       }
     };
 
-    fetchTasks(); // Load tasks on first render
+    fetchTasks();
 
     const socket = new WebSocket(`ws://localhost:5000`);
 
@@ -32,10 +32,9 @@ const useWebSocket = (userEmail) => {
 
     socket.onmessage = (event) => {
       const data = JSON.parse(event.data);
-      console.log("WebSocket Message Received:", data); // Debugging
 
       if (data.type === "TASKS_UPDATED") {
-        fetchTasks(); // Ensure fresh data is fetched
+        fetchTasks(); 
       }
 
       if (data.type === "TASK_ADDED") {
@@ -48,9 +47,8 @@ const useWebSocket = (userEmail) => {
           toast.error("Failed! Please Try Again Later!");
           return;
         }
-        setTasks((prevTasks) =>
-          prevTasks.filter((task) => task._id !== data.taskId)
-        );
+      
+        setTasks((prevTasks) => prevTasks.filter((task) => task._id !== data.taskId));
         toast.success("Task deleted successfully!");
       }
     };
