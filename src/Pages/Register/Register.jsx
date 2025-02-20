@@ -146,7 +146,7 @@ const Register = () => {
                 className="w-full bg-purple-800 hover:bg-purple-950 text-white py-3 rounded-lg 
                 font-semibold transition-all duration-300 cursor-pointer"
               >
-                Login
+                Register
               </button>
             </form>
 

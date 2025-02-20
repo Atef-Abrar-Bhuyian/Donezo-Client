@@ -79,7 +79,7 @@ const Dashboard = () => {
                     ? "bg-black text-white"
                     : ""
                 }`}
-                to={"/"}
+                to={"/dashboard/toDo"}
               >
                 <FaListUl />
                 To Do
@@ -92,7 +92,7 @@ const Dashboard = () => {
                     ? "bg-black text-white"
                     : ""
                 }`}
-                to={"/"}
+                to={"/dashboard/InProgress"}
               >
                 <IoMdTimer />
                 In Progress
@@ -105,7 +105,7 @@ const Dashboard = () => {
                     ? "bg-black text-white"
                     : ""
                 }`}
-                to={"/"}
+                to={"/dashboard/Done"}
               >
                 <MdDoneAll />
                 Done
@@ -118,12 +118,13 @@ const Dashboard = () => {
                     ? "bg-black text-white"
                     : ""
                 }`}
-                to={"/"}
+                to={"/dashboard/ActivityLog"}
               >
                 <FaHistory />
                 Activity Log
               </NavLink>
             </li>
+            {/* Theme Controller */}
             <li className="rounded-lg text-purple-900 dark:text-white">
               <label className="flex cursor-pointer gap-2">
                 <svg
