@@ -19,7 +19,7 @@ const Login = () => {
 
     signIn(email, password)
       .then((result) => {
-        console.log(result);
+        // console.log(result);
         Swal.fire({
           title: "Login Successful",
           background: "#6b21a8",
@@ -46,8 +46,6 @@ const Login = () => {
         toast.error(err.message || "Login failed! Please try again.");
       });
   };
-
-  
 
   return (
     <div className="min-h-screen flex md:flex-row flex-col-reverse bg-gray-100 transition-all duration-300">

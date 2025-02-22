@@ -20,7 +20,7 @@ const useWebSocket = (userEmail) => {
         const data = await response.json();
         setTasks(data);
       } catch (error) {
-        console.error("Error fetching tasks:", error);
+        // console.error("Error fetching tasks:", error);
       } finally {
         setIsLoading(false);
       }
@@ -31,23 +31,25 @@ const useWebSocket = (userEmail) => {
     const socket = new WebSocket(`ws://localhost:5000`);
 
     socket.onopen = () => {
-      console.log("WebSocket Connected");
+      // console.log("WebSocket Connected");
       socket.send(JSON.stringify({ type: "REGISTER", userId: userEmail }));
     };
 
     socket.onmessage = (event) => {
       const data = JSON.parse(event.data);
-
+      // console.log("WebSocket Message Received:", data); // Debug log
       switch (data.type) {
         case "TASKS_UPDATED":
           fetchTasks();
           break;
         case "TASK_ADDED":
+          // console.log("Adding new task:", data.task); // Debug log
           toast.success("New task added!");
           setTasks((prevTasks) => {
-            const newTask = data.task;
-            if (prevTasks.some((task) => task._id === newTask._id)) return prevTasks;
-            return [...prevTasks, newTask];
+            if (prevTasks.some((task) => task._id === data.task._id)) {
+              return prevTasks; // Avoid duplicates
+            }
+            return [...prevTasks, data.task];
           });
           break;
         case "TASK_UPDATED":
@@ -72,12 +74,16 @@ const useWebSocket = (userEmail) => {
           toast.error(data.message || "An error occurred");
           break;
         default:
-          console.log("Unknown message type", data.type);
+          // console.log("Unknown message type:", data.type);
       }
     };
 
     socket.onclose = () => {
-      console.log("WebSocket Disconnected");
+      // console.log("WebSocket Disconnected");
+    };
+
+    socket.onerror = (error) => {
+      // console.error("WebSocket Error:", error);
     };
 
     wsRef.current = socket;

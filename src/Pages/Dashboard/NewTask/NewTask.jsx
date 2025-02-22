@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { FaPlus } from "react-icons/fa";
 import useAuth from "../../../hooks/useAuth";
 import { toast, ToastContainer } from "react-toastify";
@@ -12,18 +12,27 @@ const NewTask = () => {
   const { user } = useAuth();
   const [modal, setModal] = useState(null);
   const [startDate, setStartDate] = useState(null);
-  const { ws, tasks, setTasks, isLoading } = useWebSocket(user?.email);
-
-  useEffect(() => {
-    console.log("Current tasks:", tasks.map(task => ({ _id: task._id, category: task.category })));
-  }, [tasks]);
+  const {
+    ws,
+    tasks = [],
+    setTasks,
+    isLoading = false,
+  } = useWebSocket(user?.email);
 
   if (isLoading) return <div>Loading tasks...</div>;
 
-  const toDoTaskList = tasks?.filter((task) => task?.category === "ToDo") || [];
+  const toDoTaskList =
+    tasks
+      ?.filter((task) => task?.category === "ToDo")
+      ?.sort((a, b) => (a.order || 0) - (b.order || 0)) || [];
   const inProgressTaskList =
-    tasks?.filter((task) => task?.category === "InProgress") || [];
-  const doneTaskList = tasks?.filter((task) => task?.category === "Done") || [];
+    tasks
+      ?.filter((task) => task?.category === "InProgress")
+      ?.sort((a, b) => (a.order || 0) - (b.order || 0)) || [];
+  const doneTaskList =
+    tasks
+      ?.filter((task) => task?.category === "Done")
+      ?.sort((a, b) => (a.order || 0) - (b.order || 0)) || [];
 
   const handleOpenModal = () => {
     if (modal) modal.showModal();
@@ -51,6 +60,7 @@ const NewTask = () => {
       userEmail,
       createdAt,
       taskDueDate,
+      order: 0,
     };
 
     if (ws && ws.readyState === WebSocket.OPEN) {
@@ -88,10 +98,28 @@ const NewTask = () => {
       const [movedTask] = updatedList.splice(source.index, 1);
       updatedList.splice(destination.index, 0, movedTask);
 
-      const newTasks = tasks.map((task) =>
-        updatedList.find((t) => t._id === task._id) || task
+      const reorderedTasks = updatedList.map((task, index) => ({
+        ...task,
+        order: index,
+      }));
+
+      const newTasks = tasks.map(
+        (task) => reorderedTasks.find((t) => t._id === task._id) || task
       );
       setTasks(newTasks);
+
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        reorderedTasks.forEach((task) => {
+          ws.send(
+            JSON.stringify({
+              type: "TASK_UPDATE",
+              _id: task._id.toString(),
+              userId: user?.email,
+              task: { order: task.order },
+            })
+          );
+        });
+      }
     } else {
       const sourceTasks = Array.from(sourceList);
       const destTasks = Array.from(destList);
@@ -99,23 +127,35 @@ const NewTask = () => {
       movedTask.category = destination.droppableId;
       destTasks.splice(destination.index, 0, movedTask);
 
+      const updatedSourceTasks = sourceTasks.map((task, index) => ({
+        ...task,
+        order: index,
+      }));
+      const updatedDestTasks = destTasks.map((task, index) => ({
+        ...task,
+        order: index,
+      }));
+
       const newTasks = tasks.map((task) => {
         const updatedTask =
-          sourceTasks.find((t) => t._id === task._id) ||
-          destTasks.find((t) => t._id === task._id);
-        return updatedTask || task;
+          updatedSourceTasks.find((t) => t._id === task._id) ||
+          updatedDestTasks.find((t) => t._id === task._id) ||
+          task;
+        return updatedTask;
       });
       setTasks(newTasks);
 
       if (ws && ws.readyState === WebSocket.OPEN) {
-        ws.send(
-          JSON.stringify({
-            type: "TASK_UPDATE",
-            _id: movedTask._id.toString(),
-            userId: user?.email,
-            task: { category: movedTask.category },
-          })
-        );
+        [...updatedSourceTasks, ...updatedDestTasks].forEach((task) => {
+          ws.send(
+            JSON.stringify({
+              type: "TASK_UPDATE",
+              _id: task._id.toString(),
+              userId: user?.email,
+              task: { category: task.category, order: task.order },
+            })
+          );
+        });
       }
     }
   };
@@ -145,34 +185,30 @@ const NewTask = () => {
                     <h1 className="text-center font-semibold">To Do</h1>
                     <div className="flex flex-col">
                       {toDoTaskList.length > 0 ? (
-                        toDoTaskList.map((task, idx) => {
-                          console.log("Rendering ToDo Draggable with id:", task._id.toString());
-                          return (
-                            <Draggable
-                              key={task._id.toString()}
-                              draggableId={task._id.toString()}
-                              index={idx}
-                            >
-                              {(provided) => (
-                                <div
-                                  ref={provided.innerRef}
-                                  {...provided.draggableProps}
-                                  {...provided.dragHandleProps}
-                                >
-                                  <TaskCard
-                                    key={task._id}
-                                    title={task.title}
-                                    description={task.description}
-                                    category={task.category}
-                                    taskDueDate={task.taskDueDate}
-                                    setTasks={setTasks}
-                                    _id={task._id}
-                                  />
-                                </div>
-                              )}
-                            </Draggable>
-                          );
-                        })
+                        toDoTaskList.map((task, idx) => (
+                          <Draggable
+                            key={task._id.toString()}
+                            draggableId={task._id.toString()}
+                            index={idx}
+                          >
+                            {(provided) => (
+                              <div
+                                ref={provided.innerRef}
+                                {...provided.draggableProps}
+                                {...provided.dragHandleProps}
+                              >
+                                <TaskCard
+                                  title={task.title}
+                                  description={task.description}
+                                  category={task.category}
+                                  taskDueDate={task.taskDueDate || ""}
+                                  setTasks={setTasks}
+                                  _id={task._id}
+                                />
+                              </div>
+                            )}
+                          </Draggable>
+                        ))
                       ) : (
                         <p className="text-center">No tasks here</p>
                       )}
@@ -193,34 +229,30 @@ const NewTask = () => {
                     <h1 className="text-center font-semibold">In Progress</h1>
                     <div>
                       {inProgressTaskList.length > 0 ? (
-                        inProgressTaskList.map((task, idx) => {
-                          console.log("Rendering InProgress Draggable with id:", task._id.toString());
-                          return (
-                            <Draggable
-                              key={task._id.toString()}
-                              draggableId={task._id.toString()}
-                              index={idx}
-                            >
-                              {(provided) => (
-                                <div
-                                  ref={provided.innerRef}
-                                  {...provided.draggableProps}
-                                  {...provided.dragHandleProps}
-                                >
-                                  <TaskCard
-                                    key={task._id}
-                                    title={task.title}
-                                    description={task.description}
-                                    category={task.category}
-                                    taskDueDate={task.taskDueDate}
-                                    setTasks={setTasks}
-                                    _id={task._id}
-                                  />
-                                </div>
-                              )}
-                            </Draggable>
-                          );
-                        })
+                        inProgressTaskList.map((task, idx) => (
+                          <Draggable
+                            key={task._id.toString()}
+                            draggableId={task._id.toString()}
+                            index={idx}
+                          >
+                            {(provided) => (
+                              <div
+                                ref={provided.innerRef}
+                                {...provided.draggableProps}
+                                {...provided.dragHandleProps}
+                              >
+                                <TaskCard
+                                  title={task.title}
+                                  description={task.description}
+                                  category={task.category}
+                                  taskDueDate={task.taskDueDate || ""}
+                                  setTasks={setTasks}
+                                  _id={task._id}
+                                />
+                              </div>
+                            )}
+                          </Draggable>
+                        ))
                       ) : (
                         <p className="text-center">No tasks here</p>
                       )}
@@ -241,34 +273,30 @@ const NewTask = () => {
                     <h1 className="text-center font-semibold">Done</h1>
                     <div>
                       {doneTaskList.length > 0 ? (
-                        doneTaskList.map((task, idx) => {
-                          console.log("Rendering Done Draggable with id:", task._id.toString());
-                          return (
-                            <Draggable
-                              key={task._id.toString()}
-                              draggableId={task._id.toString()}
-                              index={idx}
-                            >
-                              {(provided) => (
-                                <div
-                                  ref={provided.innerRef}
-                                  {...provided.draggableProps}
-                                  {...provided.dragHandleProps}
-                                >
-                                  <TaskCard
-                                    key={task._id}
-                                    title={task.title}
-                                    description={task.description}
-                                    category={task.category}
-                                    taskDueDate={task.taskDueDate}
-                                    setTasks={setTasks}
-                                    _id={task._id}
-                                  />
-                                </div>
-                              )}
-                            </Draggable>
-                          );
-                        })
+                        doneTaskList.map((task, idx) => (
+                          <Draggable
+                            key={task._id.toString()}
+                            draggableId={task._id.toString()}
+                            index={idx}
+                          >
+                            {(provided) => (
+                              <div
+                                ref={provided.innerRef}
+                                {...provided.draggableProps}
+                                {...provided.dragHandleProps}
+                              >
+                                <TaskCard
+                                  title={task.title}
+                                  description={task.description}
+                                  category={task.category}
+                                  taskDueDate={task.taskDueDate || ""}
+                                  setTasks={setTasks}
+                                  _id={task._id}
+                                />
+                              </div>
+                            )}
+                          </Draggable>
+                        ))
                       ) : (
                         <p className="text-center">No tasks here</p>
                       )}
@@ -282,7 +310,7 @@ const NewTask = () => {
         </DragDropContext>
       </div>
 
-      {/* Modal for Adding New Task */}
+      {/* Add new Task Modal */}
       <dialog
         id="my_modal_5"
         className="modal modal-bottom sm:modal-middle"
