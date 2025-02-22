@@ -15,7 +15,7 @@ const useWebSocket = (userEmail) => {
     const fetchTasks = async () => {
       try {
         const response = await fetch(
-          `http://localhost:5000/tasks?userEmail=${userEmail}`
+          `https://donezo-server-six.vercel.app/tasks?userEmail=${userEmail}`
         );
         const data = await response.json();
         setTasks(data);
