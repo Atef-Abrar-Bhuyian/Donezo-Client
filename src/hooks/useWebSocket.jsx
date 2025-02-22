@@ -1,14 +1,17 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { toast } from "react-toastify";
 
 const useWebSocket = (userEmail) => {
   const [tasks, setTasks] = useState([]);
-  const [ws, setWs] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const wsRef = useRef(null);
 
   useEffect(() => {
-    if (!userEmail) return;
+    if (!userEmail) {
+      setIsLoading(false);
+      return;
+    }
 
-    // Fetch tasks from API
     const fetchTasks = async () => {
       try {
         const response = await fetch(
@@ -18,6 +21,8 @@ const useWebSocket = (userEmail) => {
         setTasks(data);
       } catch (error) {
         console.error("Error fetching tasks:", error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -33,35 +38,56 @@ const useWebSocket = (userEmail) => {
     socket.onmessage = (event) => {
       const data = JSON.parse(event.data);
 
-      if (data.type === "TASKS_UPDATED") {
-        fetchTasks(); 
-      }
-
-      if (data.type === "TASK_ADDED") {
-        toast.success("New task added!");
-        setTasks((prevTasks) => [...prevTasks, data?.task]);
-      }
-
-      if (data.type === "TASK_DELETED") {
-        if (!data.taskId) {
-          toast.error("Failed! Please Try Again Later!");
-          return;
-        }
-      
-        setTasks((prevTasks) => prevTasks.filter((task) => task._id !== data.taskId));
-        toast.success("Task deleted successfully!");
+      switch (data.type) {
+        case "TASKS_UPDATED":
+          fetchTasks();
+          break;
+        case "TASK_ADDED":
+          toast.success("New task added!");
+          setTasks((prevTasks) => {
+            const newTask = data.task;
+            if (prevTasks.some((task) => task._id === newTask._id)) return prevTasks;
+            return [...prevTasks, newTask];
+          });
+          break;
+        case "TASK_UPDATED":
+          if (!data.task) {
+            toast.error("Failed to update task!");
+            return;
+          }
+          setTasks((prevTasks) =>
+            prevTasks.map((task) =>
+              task._id === data.task._id ? data.task : task
+            )
+          );
+          toast.success("Task updated successfully!");
+          break;
+        case "TASK_DELETED":
+          setTasks((prevTasks) =>
+            prevTasks.filter((task) => task._id !== data.taskId)
+          );
+          toast.success("Task deleted successfully!");
+          break;
+        case "ERROR":
+          toast.error(data.message || "An error occurred");
+          break;
+        default:
+          console.log("Unknown message type", data.type);
       }
     };
 
-    socket.onclose = () => console.log("WebSocket Disconnected");
-    setWs(socket);
+    socket.onclose = () => {
+      console.log("WebSocket Disconnected");
+    };
+
+    wsRef.current = socket;
 
     return () => {
       socket.close();
     };
   }, [userEmail]);
 
-  return { tasks, setTasks, ws };
+  return { tasks, setTasks, ws: wsRef.current, isLoading };
 };
 
 export default useWebSocket;

@@ -121,7 +121,7 @@ const Dashboard = () => {
                 to={"/dashboard/ActivityLog"}
               >
                 <FaHistory />
-                Activity Log
+                Activity Log <sup className="badge-xs badge">Beta</sup>
               </NavLink>
             </li>
             {/* Theme Controller */}

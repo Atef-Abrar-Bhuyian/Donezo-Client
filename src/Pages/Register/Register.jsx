@@ -99,8 +99,8 @@ const Register = () => {
                 <input
                   type="text"
                   name="name"
-                  placeholder="Enter your email"
-                  className="w-full p-3 border border-gray-500 rounded-lg focus:ring-2 focus:ring-purple-400 focus:outline-none bg-gray-200 text-gray-900"
+                  placeholder="Enter your name"
+                  className="w-full p-3 border border-gray-500 rounded-lg focus:ring-2 focus:ring-purple-400 focus:outline-none   text-gray-900"
                 />
               </div>
               {/* Email Input */}
@@ -111,8 +111,8 @@ const Register = () => {
                 <input
                   type="url"
                   name="photoURL"
-                  placeholder="Enter your email"
-                  className="w-full p-3 border border-gray-500 rounded-lg focus:ring-2 focus:ring-purple-400 focus:outline-none bg-gray-200 text-gray-900"
+                  placeholder="Enter your photoURL"
+                  className="w-full p-3 border border-gray-500 rounded-lg focus:ring-2 focus:ring-purple-400 focus:outline-none   text-gray-900"
                 />
               </div>
               {/* Email Input */}
@@ -124,7 +124,7 @@ const Register = () => {
                   type="email"
                   name="email"
                   placeholder="Enter your email"
-                  className="w-full p-3 border border-gray-500 rounded-lg focus:ring-2 focus:ring-purple-400 focus:outline-none bg-gray-200 text-gray-900"
+                  className="w-full p-3 border border-gray-500 rounded-lg focus:ring-2 focus:ring-purple-400 focus:outline-none   text-gray-900"
                 />
               </div>
 
@@ -137,7 +137,7 @@ const Register = () => {
                   type="password"
                   name="password"
                   placeholder="Enter your password"
-                  className="w-full p-3 border border-gray-500 rounded-lg focus:ring-2 focus:ring-purple-400 focus:outline-none bg-gray-200 text-gray-900"
+                  className="w-full p-3 border border-gray-500 rounded-lg focus:ring-2 focus:ring-purple-400 focus:outline-none   text-gray-900"
                 />
               </div>
 
