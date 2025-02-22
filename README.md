@@ -45,7 +45,7 @@ This project uses the following dependencies:
 1. Clone this repository:
 
    ```bash
-   git clone https://github.com/your-username/donezo.git
+   git clone https://github.com/Atef-Abrar-Bhuyian/Donezo-Client.git
 
    ```
 
